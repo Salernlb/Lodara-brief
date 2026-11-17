@@ -1,0 +1,23 @@
+name: Daily brief
+
+on:
+  schedule:
+    # 14:00 UTC is 8:00am Central in winter (9:00am once daylight saving starts).
+    # GitHub sometimes runs scheduled jobs a few minutes late.
+    - cron: "0 14 * * *"
+  workflow_dispatch: {}   # adds the "Run workflow" button for manual runs
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build and send the brief
+        run: python brief.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
